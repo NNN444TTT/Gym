@@ -1,0 +1,29 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Finish Session - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="finish-session">
+    <div class="finish-container">
+        <h1>🎉 Great Work!</h1>
+        <p class="finish-subtitle">Ready to finish your workout?</p>
+        
+        <div class="session-summary">
+            <h2>{{ session.workout.name }}</h2>
+            <p>{{ session.exercise_sessions.count }} exercise{{ session.exercise_sessions.count|pluralize }}</p>
+        </div>
+        
+        <form method="post" class="finish-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-large">
+                Finish Session
+            </button>
+        </form>
+        
+        <a href="{% url 'exercise_session' session.id session.exercise_sessions.count %}" 
+           class="btn btn-secondary">
+            ← Go Back
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Dashboard - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <h1>Welcome, {{ user.username }}</h1>
+        <a href="{% url 'login' %}" class="btn btn-small btn-secondary">Logout</a>
+    </header>
+    
+    {% include 'workouts/nav.html' %}
+    
+    {% if active_session %}
+    <div class="alert alert-info">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+            <div>
+                <p><strong>Active Session:</strong> {{ active_session.workout.name }}</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'exercise_session' active_session.id 1 %}" class="btn btn-primary">
+                    Continue Session
+                </a>
+                <a href="{% url 'session_cancel' active_session.id %}" class="btn btn-danger">
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <section class="workouts-section">
+        <div class="section-header">
+            <h2>Your Workouts</h2>
+            <a href="{% url 'workout_create' %}" class="btn btn-primary">+ New Workout</a>
+        </div>
+        
+        {% if workouts %}
+        <div class="workout-list">
+            {% for workout in workouts %}
+            <div class="workout-card">
+                <div class="workout-info">
+                    <h3>{{ workout.name }}</h3>
+                    <p class="workout-exercises">{{ workout.exercises.count }} exercise{{ workout.exercises.count|pluralize }}</p>
+                </div>
+                <div class="workout-actions">
+                    <a href="{% url 'session_start' workout.id %}" class="btn btn-primary">
+                        Start
+                    </a>
+                    <a href="{% url 'workout_edit' workout.id %}" class="btn btn-secondary">
+                        Edit
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No workouts yet. Create your first workout to get started!</p>
+            <a href="{% url 'workout_create' %}" class="btn btn-primary btn-large">
+                Create First Workout
+            </a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

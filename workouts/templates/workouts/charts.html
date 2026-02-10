@@ -1,0 +1,191 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Progress Charts - Gym Tracker{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <h1>Progress Charts</h1>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Dashboard</a>
+    </header>
+    
+    {% include 'workouts/nav.html' %}
+    
+    <div class="chart-container">
+        <h2>Select Exercise</h2>
+        <form method="get" class="exercise-selector">
+            <select name="exercise" id="exercise-select" onchange="this.form.submit()">
+                <option value="">-- Choose an exercise --</option>
+                {% for exercise in exercises %}
+                <option value="{{ exercise.id }}" {% if exercise.id|stringformat:"s" == selected_exercise_id %}selected{% endif %}>
+                    {{ exercise.name }} ({{ exercise.workout.name }})
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+        
+        {% if chart_data %}
+        <div class="chart-wrapper">
+            <canvas id="weightChart"></canvas>
+        </div>
+        
+        <div class="chart-wrapper">
+            <canvas id="volumeChart"></canvas>
+        </div>
+        
+        <div class="chart-wrapper">
+            <canvas id="repsChart"></canvas>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Select an exercise to view progress charts.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if chart_data %}
+<script>
+const chartData = {{ chart_data|safe }};
+
+// Weight Chart
+const weightCtx = document.getElementById('weightChart').getContext('2d');
+new Chart(weightCtx, {
+    type: 'line',
+    data: {
+        labels: {{ chart_data.labels|safe }},
+        datasets: [{
+            label: 'Max Weight (kg)',
+            data: {{ chart_data.max_weight|safe }},
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Avg Weight (kg)',
+            data: {{ chart_data.avg_weight|safe }},
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Weight Progress',
+                color: '#cbd5e1',
+                font: { size: 16, weight: 'bold' }
+            },
+            legend: {
+                labels: { color: '#cbd5e1' }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: '#94a3b8' },
+                grid: { color: '#334155' }
+            },
+            x: {
+                ticks: { color: '#94a3b8' },
+                grid: { color: '#334155' }
+            }
+        }
+    }
+});
+
+// Volume Chart
+const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+new Chart(volumeCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ chart_data.labels|safe }},
+        datasets: [{
+            label: 'Total Volume (kg)',
+            data: {{ chart_data.total_volume|safe }},
+            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+            borderColor: '#6366f1',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Training Volume',
+                color: '#cbd5e1',
+                font: { size: 16, weight: 'bold' }
+            },
+            legend: {
+                labels: { color: '#cbd5e1' }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: '#94a3b8' },
+                grid: { color: '#334155' }
+            },
+            x: {
+                ticks: { color: '#94a3b8' },
+                grid: { color: '#334155' }
+            }
+        }
+    }
+});
+
+// Reps Chart
+const repsCtx = document.getElementById('repsChart').getContext('2d');
+new Chart(repsCtx, {
+    type: 'line',
+    data: {
+        labels: {{ chart_data.labels|safe }},
+        datasets: [{
+            label: 'Total Reps',
+            data: {{ chart_data.total_reps|safe }},
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Total Reps Per Session',
+                color: '#cbd5e1',
+                font: { size: 16, weight: 'bold' }
+            },
+            legend: {
+                labels: { color: '#cbd5e1' }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: '#94a3b8' },
+                grid: { color: '#334155' }
+            },
+            x: {
+                ticks: { color: '#94a3b8' },
+                grid: { color: '#334155' }
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'workouts/base.html' %}
+{% load workout_filters %}
+
+{% block title %}{{ current_exercise_session.exercise.name }} - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="exercise-session" 
+     data-session-id="{{ session.id }}" 
+     data-exercise-session-id="{{ current_exercise_session.id }}"
+     data-current-order="{{ current_order }}"
+     data-has-previous="{{ has_previous|lower }}"
+     data-has-next="{{ has_next|lower }}">
+    
+    <!-- Header with progress -->
+    <div class="session-header">
+        <div class="progress-indicator">
+            <span class="progress-text">Exercise {{ current_order }} / {{ total_exercises }}</span>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ current_order|div:total_exercises|mul:100 }}%"></div>
+            </div>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-small">Exit</a>
+    </div>
+    
+    <!-- Exercise name -->
+    <div class="exercise-header">
+        <h1>{{ current_exercise_session.exercise.name }}</h1>
+    </div>
+    
+    <!-- Rest Timer -->
+    <div class="timer-section">
+        <div class="timer-display" id="timer-display">02:00</div>
+        <div class="timer-controls">
+            <button class="btn btn-primary" id="timer-start">Start</button>
+            <button class="btn btn-secondary" id="timer-pause" style="display: none;">Pause</button>
+            <button class="btn btn-secondary" id="timer-reset">Reset</button>
+        </div>
+    </div>
+    
+    <!-- Sets Table -->
+    <div class="sets-section">
+        <h2>Sets</h2>
+        <div class="sets-table">
+            <div class="sets-header">
+                <span>Set</span>
+                <span>Weight (kg)</span>
+                <span>Reps</span>
+                <span>✓</span>
+            </div>
+            {% for set in sets %}
+            <div class="set-row" data-set-id="{{ set.id }}">
+                <span class="set-number">{{ set.set_number }}</span>
+                <input 
+                    type="number" 
+                    class="set-input weight-input" 
+                    value="{{ set.weight }}" 
+                    step="0.5"
+                    min="0"
+                    data-field="weight"
+                >
+                <input 
+                    type="number" 
+                    class="set-input reps-input" 
+                    value="{{ set.reps }}"
+                    min="0"
+                    data-field="reps"
+                >
+                <input 
+                    type="checkbox" 
+                    class="set-checkbox" 
+                    {% if set.completed %}checked{% endif %}
+                    data-field="completed"
+                >
+            </div>
+            {% endfor %}
+        </div>
+        <button class="btn btn-secondary btn-add-set" id="add-set-btn">+ Add Set</button>
+    </div>
+    
+    <!-- Notes Section -->
+    <div class="notes-section">
+        <h2>Notes</h2>
+        <textarea 
+            id="notes-input" 
+            class="notes-textarea" 
+            placeholder="Add notes about this exercise..."
+        >{{ current_exercise_session.notes }}</textarea>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="navigation-section">
+        {% if has_previous %}
+        <a href="{% url 'exercise_session' session.id current_order|add:'-1' %}" 
+           class="btn btn-secondary btn-large nav-btn" id="prev-btn">
+            ← Previous
+        </a>
+        {% endif %}
+        
+        {% if has_next %}
+        <a href="{% url 'exercise_session' session.id current_order|add:'1' %}" 
+           class="btn btn-primary btn-large nav-btn" id="next-btn">
+            Next →
+        </a>
+        {% else %}
+        <a href="{% url 'session_finish' session.id %}" 
+           class="btn btn-success btn-large nav-btn">
+            Finish Session
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div id="save-indicator" class="save-indicator">Saving...</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize exercise session functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        initExerciseSession();
+    });
+</script>
+{% endblock %}

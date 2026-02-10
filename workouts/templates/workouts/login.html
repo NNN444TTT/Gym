@@ -1,0 +1,31 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Login - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h1>💪 Gym Tracker</h1>
+        <p class="subtitle">Enter your name to start</p>
+        
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            <input 
+                type="text" 
+                name="username" 
+                placeholder="Your name" 
+                required
+                autofocus
+                class="input-large"
+            >
+            <button type="submit" class="btn btn-primary btn-large">
+                Start Training
+            </button>
+        </form>
+        
+        <p class="info-text">
+            New users are automatically created
+        </p>
+    </div>
+</div>
+{% endblock %}

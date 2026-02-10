@@ -1,0 +1,6 @@
+Django>=5.2,<6.0
+whitenoise>=6.6.0
+gunicorn>=21.2.0
+
+# Charts are loaded via CDN (Chart.js)
+# No additional Python packages required for charting

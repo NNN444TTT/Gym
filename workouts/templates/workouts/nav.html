@@ -1,0 +1,15 @@
+{% load static %}
+<nav class="main-nav">
+    <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        Dashboard
+    </a>
+    <a href="{% url 'history' %}" class="nav-link {% if 'history' in request.resolver_match.url_name %}active{% endif %}">
+        History
+    </a>
+    <a href="{% url 'charts' %}" class="nav-link {% if request.resolver_match.url_name == 'charts' %}active{% endif %}">
+        Charts
+    </a>
+    <a href="{% url 'workout_list' %}" class="nav-link {% if 'workout' in request.resolver_match.url_name %}active{% endif %}">
+        Workouts
+    </a>
+</nav>

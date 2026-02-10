@@ -1,0 +1,29 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Cancel Session - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="finish-session">
+    <div class="finish-container">
+        <h1>⚠️ Cancel Session?</h1>
+        <p class="finish-subtitle">This will delete all data from this session</p>
+        
+        <div class="session-summary">
+            <h2>{{ session.workout.name }}</h2>
+            <p>{{ session.exercise_sessions.count }} exercise{{ session.exercise_sessions.count|pluralize }}</p>
+            <p class="finish-subtitle">Started: {{ session.start_time|date:"g:i A" }}</p>
+        </div>
+        
+        <form method="post" class="finish-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-large">
+                Yes, Cancel Session
+            </button>
+        </form>
+        
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            ← Go Back
+        </a>
+    </div>
+</div>
+{% endblock %}

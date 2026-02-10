@@ -1,0 +1,48 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Workouts - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <h1>My Workouts</h1>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Dashboard</a>
+    </header>
+    
+    {% include 'workouts/nav.html' %}
+    
+    <div class="workout-actions">
+        <a href="{% url 'workout_create' %}" class="btn btn-primary">+ Create New Workout</a>
+    </div>
+    
+    {% if workouts %}
+        <div class="workouts-grid">
+            {% for workout in workouts %}
+            <div class="workout-card">
+                <h3>{{ workout.name }}</h3>
+                <p class="workout-description">{{ workout.description|default:"No description" }}</p>
+                <div class="workout-exercises">
+                    <strong>{{ workout.exercises.count }} Exercise{{ workout.exercises.count|pluralize }}</strong>
+                    {% if workout.exercises.all %}
+                    <ul class="exercise-list">
+                        {% for exercise in workout.exercises.all %}
+                        <li>{{ exercise.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="workout-actions">
+                    <a href="{% url 'workout_edit' workout.id %}" class="btn btn-secondary">Edit</a>
+                    <a href="{% url 'session_start' workout.id %}" class="btn btn-primary">Start Workout</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>You haven't created any workouts yet.</p>
+            <a href="{% url 'workout_create' %}" class="btn btn-primary">Create Your First Workout</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

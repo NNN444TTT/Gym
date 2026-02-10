@@ -1,0 +1,91 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Edit {{ workout.name }} - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back</a>
+    <h1>{{ workout.name }}</h1>
+</div>
+
+{% include 'workouts/nav.html' %}
+
+<div class="workout-edit">
+    <!-- Add Exercise Form -->
+    <div class="add-exercise-section">
+        <h2>Add Exercise</h2>
+        <form method="post" class="exercise-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_exercise">
+            <div class="form-inline">
+                <input 
+                    type="text" 
+                    name="exercise_name" 
+                    placeholder="Exercise name (e.g., Bench Press)" 
+                    required
+                    class="input-large"
+                >
+                <button type="submit" class="btn btn-primary">+ Add</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Exercise List -->
+    <div class="exercises-section">
+        <h2>Exercises ({{ exercises.count }})</h2>
+        
+        {% if exercises %}
+        <div class="exercise-list">
+            {% for exercise in exercises %}
+            <div class="exercise-item">
+                <div class="exercise-info">
+                    <span class="exercise-order">{{ forloop.counter }}</span>
+                    <span class="exercise-name">{{ exercise.name }}</span>
+                </div>
+                <div class="exercise-actions">
+                    <!-- Reorder buttons -->
+                    {% if not forloop.first %}
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reorder">
+                        <input type="hidden" name="exercise_id" value="{{ exercise.id }}">
+                        <input type="hidden" name="direction" value="up">
+                        <button type="submit" class="btn btn-icon">↑</button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if not forloop.last %}
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reorder">
+                        <input type="hidden" name="exercise_id" value="{{ exercise.id }}">
+                        <input type="hidden" name="direction" value="down">
+                        <button type="submit" class="btn btn-icon">↓</button>
+                    </form>
+                    {% endif %}
+                    
+                    <!-- Delete button -->
+                    <form method="post" style="display: inline;" onsubmit="return confirm('Delete {{ exercise.name }}?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_exercise">
+                        <input type="hidden" name="exercise_id" value="{{ exercise.id }}">
+                        <button type="submit" class="btn btn-danger btn-icon">✕</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="workout-start-section">
+            <a href="{% url 'session_start' workout.id %}" class="btn btn-primary btn-large">
+                Start This Workout
+            </a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No exercises yet. Add some exercises to start training!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

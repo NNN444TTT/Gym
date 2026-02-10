@@ -1,0 +1,51 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}{{ date|date:"F d, Y" }} - History{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <h1>{{ date|date:"l, F d, Y" }}</h1>
+        <a href="{% url 'history' %}" class="btn btn-secondary">← Back to Calendar</a>
+    </header>
+    
+    {% if sessions %}
+        {% for session in sessions %}
+        <div class="session-card">
+            <h3>{{ session.workout.name }}</h3>
+            <div class="session-meta">
+                <span>🕐 {{ session.start_time|date:"g:i A" }} - {{ session.end_time|date:"g:i A" }}</span>
+                <span>⏱️ Duration: {{ session.end_time|timeuntil:session.start_time }}</span>
+            </div>
+            
+            <div class="exercise-summary">
+                {% for ex_session in session.exercise_sessions.all %}
+                <div class="exercise-summary-item">
+                    <strong>{{ ex_session.exercise.name }}</strong>
+                    <div class="set-history">
+                        {% for set in ex_session.sets.all %}
+                        <div class="set-badge">
+                            Set {{ forloop.counter }}: {{ set.weight }}kg × {{ set.reps }} reps
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                {% if ex_session.notes %}
+                <div style="padding: var(--spacing-sm); background: var(--dark-light); border-radius: var(--radius-md); margin-top: var(--spacing-xs);">
+                    <small style="color: var(--gray);">Notes:</small><br>
+                    {{ ex_session.notes }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <p>No workouts recorded for this day.</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

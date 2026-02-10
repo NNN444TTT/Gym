@@ -1,0 +1,33 @@
+{% extends 'workouts/base.html' %}
+
+{% block title %}Create Workout - Gym Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back</a>
+    <h1>Create Workout</h1>
+</div>
+
+{% include 'workouts/nav.html' %}
+
+<div class="form-container">
+    <form method="post" class="workout-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Workout Name</label>
+            <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                placeholder="e.g., Push Day, Pull Day, Legs" 
+                required
+                autofocus
+                class="input-large"
+            >
+        </div>
+        <button type="submit" class="btn btn-primary btn-large">
+            Create Workout
+        </button>
+    </form>
+</div>
+{% endblock %}
