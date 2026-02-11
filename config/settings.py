@@ -29,6 +29,9 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 # Allow all hosts in development, specific hosts in production
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '192.168.11.107,127.0.0.1,localhost').split(',')
 
+# CSRF trusted origins for production (Railway)
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://web-production-503d1.up.railway.app').split(',')
+
 
 # Application definition
 
