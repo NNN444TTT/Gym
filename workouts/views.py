@@ -414,6 +414,24 @@ def history_day(request, year, month, day):
         end_time__isnull=False
     ).prefetch_related('exercise_sessions__exercise', 'exercise_sessions__sets')
     
+    return render(request, 'workouts/history_day.html', {
+        'date': target_date,
+        'sessions': sessions,
+    })
+
+
+@login_required
+def session_delete(request, session_id):
+    """Delete a completed session from history"""
+    session = get_object_or_404(Session, id=session_id, user=request.user, end_time__isnull=False)
+    
+    if request.method == 'POST':
+        session_date = session.date
+        session.delete()
+        return redirect('history_day', year=session_date.year, month=session_date.month, day=session_date.day)
+    
+    return render(request, 'workouts/session_delete.html', {'session': session})
+    
     context = {
         'date': target_date,
         'sessions': sessions,

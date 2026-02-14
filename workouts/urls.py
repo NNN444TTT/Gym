@@ -15,6 +15,7 @@ urlpatterns = [
     # History and Charts
     path('history/', views.history, name='history'),
     path('history/<int:year>/<int:month>/<int:day>/', views.history_day, name='history_day'),
+    path('history/session/<int:session_id>/delete/', views.session_delete, name='session_delete'),
     path('charts/', views.charts, name='charts'),
     
     # AJAX endpoints

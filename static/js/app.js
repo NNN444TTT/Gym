@@ -212,9 +212,23 @@ function restoreTimerState() {
             timerDuration = duration;
             
             if (timeRemaining > 0) {
+                // Don't call startTimer() again, just set up the interval
                 timerStartTime = startTime;
                 timerRunning = true;
-                startTimer();
+                
+                timerInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+                    timeRemaining = Math.max(0, timerDuration - elapsed);
+                    
+                    if (timeRemaining <= 0) {
+                        pauseTimer();
+                        playNotificationSound();
+                        timeRemaining = 0;
+                    }
+                    
+                    updateTimerDisplay();
+                    saveTimerState();
+                }, 1000);
                 
                 const startBtn = document.getElementById('timer-start');
                 const pauseBtn = document.getElementById('timer-pause');
@@ -364,18 +378,38 @@ function initNotes() {
     const exerciseSessionId = exerciseSession.dataset.exerciseSessionId;
     
     let saveTimeout = null;
+    let isDirty = false;
     
     notesInput.addEventListener('input', () => {
+        isDirty = true;
         if (saveTimeout) clearTimeout(saveTimeout);
         
         saveTimeout = setTimeout(() => {
             updateNotes(exerciseSessionId, notesInput.value);
-        }, 1000);
+            isDirty = false;
+        }, 500);
+    });
+    
+    // Save notes before navigation
+    const navButtons = document.querySelectorAll('.nav-btn, #finish-btn');
+    navButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                if (saveTimeout) clearTimeout(saveTimeout);
+                
+                // Save immediately and then navigate
+                updateNotes(exerciseSessionId, notesInput.value).then(() => {
+                    isDirty = false;
+                    window.location.href = button.href;
+                });
+            }
+        });
     });
 }
 
 function updateNotes(exerciseSessionId, notes) {
-    fetch('/api/notes/update/', {
+    return fetch('/api/notes/update/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -391,9 +425,11 @@ function updateNotes(exerciseSessionId, notes) {
         if (data.status === 'success') {
             showSaveIndicator();
         }
+        return data;
     })
     .catch(error => {
         console.error('Error updating notes:', error);
+        throw error;
     });
 }
 
@@ -528,9 +564,12 @@ window.addEventListener('beforeunload', (e) => {
 // ===== INITIALIZATION =====
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize large mode toggle
+    // Initialize large mode toggle on all pages
     initLargeMode();
     
-    // Initialize exercise session features
-    initExerciseSession();
+    // Initialize exercise session features only if on exercise session page
+    const exerciseSession = document.querySelector('.exercise-session');
+    if (exerciseSession) {
+        initExerciseSession();
+    }
 });

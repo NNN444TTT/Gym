@@ -984,8 +984,15 @@ body.large-mode .nav-link {
     border-left: 4px solid var(--primary);
 }
 
-.session-card h3 {
+.session-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: var(--spacing-sm);
+}
+
+.session-card h3 {
+    margin-bottom: 0;
     color: var(--white);
 }
 

@@ -12,7 +12,10 @@
     {% if sessions %}
         {% for session in sessions %}
         <div class="session-card">
-            <h3>{{ session.workout.name }}</h3>
+            <div class="session-card-header">
+                <h3>{{ session.workout.name }}</h3>
+                <a href="{% url 'session_delete' session.id %}" class="btn btn-danger btn-small">Delete</a>
+            </div>
             <div class="session-meta">
                 <span>🕐 {{ session.start_time|date:"g:i A" }} - {{ session.end_time|date:"g:i A" }}</span>
                 <span>⏱️ Duration: {{ session.end_time|timeuntil:session.start_time }}</span>
