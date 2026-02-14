@@ -70,11 +70,24 @@ def workout_edit(request, workout_id):
             name = request.POST.get('exercise_name', '').strip()
             if name:
                 max_order = workout.exercises.aggregate(Max('order'))['order__max'] or 0
-                Exercise.objects.create(
+                new_exercise = Exercise.objects.create(
                     name=name,
                     workout=workout,
                     order=max_order + 1
                 )
+                
+                # If there's an active session for this workout, add the exercise to it
+                active_session = Session.objects.filter(
+                    user=request.user,
+                    workout=workout,
+                    end_time__isnull=True
+                ).first()
+                
+                if active_session:
+                    ExerciseSession.objects.create(
+                        exercise=new_exercise,
+                        session=active_session
+                    )
         
         elif action == 'delete_exercise':
             exercise_id = request.POST.get('exercise_id')

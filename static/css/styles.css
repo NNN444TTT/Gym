@@ -442,6 +442,35 @@ textarea:focus {
     margin-bottom: var(--spacing-lg);
 }
 
+.timer-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.timer-settings label {
+    color: var(--gray);
+    font-size: var(--font-size-sm);
+}
+
+.timer-settings input {
+    width: 60px;
+    padding: var(--spacing-xs);
+    background: var(--dark);
+    border: 2px solid var(--dark-lighter);
+    border-radius: var(--radius-md);
+    color: var(--white);
+    font-size: var(--font-size-base);
+    text-align: center;
+}
+
+.timer-settings input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
 .timer-display {
     font-size: 3rem;
     font-weight: 700;
@@ -659,6 +688,94 @@ textarea:focus {
     border-left: 3px solid var(--primary);
 }
 
+/* ===== LARGE MODE TOGGLE ===== */
+.large-mode-toggle {
+    position: fixed;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--dark-light);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.large-mode-toggle:hover {
+    background: var(--primary);
+    color: var(--white);
+    transform: scale(1.1);
+}
+
+.large-mode-toggle:active {
+    transform: scale(0.95);
+}
+
+body.large-mode .large-mode-toggle {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* ===== LARGE MODE STYLES ===== */
+body.large-mode {
+    font-size: 1.25rem;
+}
+
+body.large-mode h1 {
+    font-size: 2.5rem;
+}
+
+body.large-mode h2 {
+    font-size: 2rem;
+}
+
+body.large-mode h3 {
+    font-size: 1.75rem;
+}
+
+body.large-mode .btn {
+    font-size: 1.25rem;
+    padding: 1rem 1.5rem;
+    min-height: 56px;
+}
+
+body.large-mode .set-input {
+    font-size: 1.5rem;
+    padding: 1rem;
+    min-height: 56px;
+}
+
+body.large-mode .timer-display {
+    font-size: 4rem;
+}
+
+body.large-mode .notes-textarea {
+    font-size: 1.25rem;
+    padding: 1rem;
+}
+
+body.large-mode .workout-card h3 {
+    font-size: 1.75rem;
+}
+
+body.large-mode .stat-value {
+    font-size: 2.5rem;
+}
+
+body.large-mode .nav-link {
+    font-size: 1.25rem;
+    padding: 1rem 1.5rem;
+}
+
 /* ===== TOUCH IMPROVEMENTS ===== */
 @media (hover: none) and (pointer: coarse) {
     .btn {
@@ -668,6 +785,14 @@ textarea:focus {
     .set-input,
     .set-checkbox {
         min-height: 48px;
+    }
+    
+    body.large-mode .btn {
+        min-height: 64px;
+    }
+    
+    body.large-mode .set-input {
+        min-height: 64px;
     }
 }
 

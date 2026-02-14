@@ -51,17 +51,81 @@ function initExerciseSession() {
     initSwipeGestures();
 }
 
+// ===== LARGE MODE =====
+
+function initLargeMode() {
+    const toggleBtn = document.getElementById('large-mode-toggle');
+    if (!toggleBtn) return;
+    
+    // Load saved preference
+    const isLargeMode = localStorage.getItem('largeMode') === 'true';
+    if (isLargeMode) {
+        document.body.classList.add('large-mode');
+    }
+    
+    // Toggle on click
+    toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('large-mode');
+        const enabled = document.body.classList.contains('large-mode');
+        localStorage.setItem('largeMode', enabled);
+    });
+}
+
 // ===== TIMER =====
+    
+    // Initialize set inputs
+    initSetInputs();
+    
+    // Initialize notes
+    initNotes();
+    
+    // Initialize add set button
+    initAddSet();
+    
+    // Initialize swipe gestures
+    initSwipeGestures();
+}
+
+// ===== TIMER =====
+
+let timerRunning = false;
+let timerInterval = null;
+let timeRemaining = 120; // Default 2 minutes
+let timerStartTime = null;
+let timerDuration = 120;
 
 function initTimer() {
     const timerDisplay = document.getElementById('timer-display');
     const startBtn = document.getElementById('timer-start');
     const pauseBtn = document.getElementById('timer-pause');
     const resetBtn = document.getElementById('timer-reset');
+    const timerInput = document.getElementById('timer-input');
     
     if (!timerDisplay || !startBtn || !pauseBtn || !resetBtn) return;
     
+    // Load saved timer preference
+    const savedDuration = localStorage.getItem('timerDuration');
+    if (savedDuration) {
+        timerDuration = parseInt(savedDuration);
+        timeRemaining = timerDuration;
+    }
+    
+    // Load timer state if it was running
+    restoreTimerState();
+    
     updateTimerDisplay();
+    
+    // Timer input change
+    if (timerInput) {
+        timerInput.value = Math.floor(timerDuration / 60);
+        timerInput.addEventListener('change', () => {
+            const minutes = parseInt(timerInput.value) || 2;
+            timerDuration = minutes * 60;
+            timeRemaining = timerDuration;
+            localStorage.setItem('timerDuration', timerDuration);
+            updateTimerDisplay();
+        });
+    }
     
     startBtn.addEventListener('click', () => {
         startTimer();
@@ -80,14 +144,21 @@ function initTimer() {
         pauseBtn.style.display = 'none';
         startBtn.style.display = 'inline-block';
     });
+    
+    // Handle page visibility changes (phone screen off/on)
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 }
 
 function startTimer() {
     if (timerRunning) return;
     
     timerRunning = true;
+    timerStartTime = Date.now();
+    saveTimerState();
+    
     timerInterval = setInterval(() => {
-        timeRemaining--;
+        const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+        timeRemaining = Math.max(0, timerDuration - elapsed);
         
         if (timeRemaining <= 0) {
             pauseTimer();
@@ -96,6 +167,7 @@ function startTimer() {
         }
         
         updateTimerDisplay();
+        saveTimerState();
     }, 1000);
 }
 
@@ -105,14 +177,74 @@ function pauseTimer() {
         clearInterval(timerInterval);
         timerInterval = null;
     }
+    clearTimerState();
 }
 
 function resetTimer() {
     pauseTimer();
-    timeRemaining = 120;
+    timeRemaining = timerDuration;
     updateTimerDisplay();
 }
 
+function saveTimerState() {
+    if (timerRunning) {
+        localStorage.setItem('timerState', JSON.stringify({
+            running: true,
+            startTime: timerStartTime,
+            duration: timerDuration
+        }));
+    }
+}
+
+function clearTimerState() {
+    localStorage.removeItem('timerState');
+}
+
+function restoreTimerState() {
+    const state = localStorage.getItem('timerState');
+    if (!state) return;
+    
+    try {
+        const { running, startTime, duration } = JSON.parse(state);
+        if (running) {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timeRemaining = Math.max(0, duration - elapsed);
+            timerDuration = duration;
+            
+            if (timeRemaining > 0) {
+                timerStartTime = startTime;
+                timerRunning = true;
+                startTimer();
+                
+                const startBtn = document.getElementById('timer-start');
+                const pauseBtn = document.getElementById('timer-pause');
+                if (startBtn && pauseBtn) {
+                    startBtn.style.display = 'none';
+                    pauseBtn.style.display = 'inline-block';
+                }
+            } else {
+                clearTimerState();
+            }
+        }
+    } catch (e) {
+        console.error('Error restoring timer:', e);
+        clearTimerState();
+    }
+}
+
+function handleVisibilityChange() {
+    if (!document.hidden && timerRunning) {
+        // Recalculate time when page becomes visible
+        const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+        timeRemaining = Math.max(0, timerDuration - elapsed);
+        updateTimerDisplay();
+        
+        if (timeRemaining <= 0) {
+            pauseTimer();
+            playNotificationSound();
+        }
+    }
+}
 function updateTimerDisplay() {
     const timerDisplay = document.getElementById('timer-display');
     if (!timerDisplay) return;
@@ -138,6 +270,15 @@ function playNotificationSound() {
     // For MVP, we'll use vibration if available
     if ('vibrate' in navigator) {
         navigator.vibrate([200, 100, 200]);
+    }
+    
+    // Show notification if permission granted
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Rest Timer Complete!', {
+            body: 'Your rest period is over',
+            icon: '/static/favicon.ico',
+            vibrate: [200, 100, 200]
+        });
     }
 }
 
@@ -387,5 +528,9 @@ window.addEventListener('beforeunload', (e) => {
 // ===== INITIALIZATION =====
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize large mode toggle
+    initLargeMode();
+    
+    // Initialize exercise session features
     initExerciseSession();
 });
