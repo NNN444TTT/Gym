@@ -154,6 +154,8 @@ function startTimer() {
     
     timerRunning = true;
     timerStartTime = Date.now();
+    timeRemaining = timerDuration; // Reset to full duration
+    updateTimerDisplay(); // Update display immediately
     saveTimerState();
     
     timerInterval = setInterval(() => {
@@ -388,6 +390,15 @@ function initNotes() {
             updateNotes(exerciseSessionId, notesInput.value);
             isDirty = false;
         }, 500);
+    });
+    
+    // Save notes when user leaves the text field
+    notesInput.addEventListener('blur', () => {
+        if (isDirty) {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            updateNotes(exerciseSessionId, notesInput.value);
+            isDirty = false;
+        }
     });
     
     // Save notes before navigation

@@ -691,8 +691,8 @@ textarea:focus {
 /* ===== LARGE MODE TOGGLE ===== */
 .large-mode-toggle {
     position: fixed;
-    top: var(--spacing-md);
-    right: var(--spacing-md);
+    bottom: var(--spacing-md);
+    left: var(--spacing-md);
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -727,53 +727,61 @@ body.large-mode .large-mode-toggle {
 
 /* ===== LARGE MODE STYLES ===== */
 body.large-mode {
-    font-size: 1.25rem;
+    font-size: 1.5rem !important;
 }
 
 body.large-mode h1 {
-    font-size: 2.5rem;
+    font-size: 3rem !important;
 }
 
 body.large-mode h2 {
-    font-size: 2rem;
+    font-size: 2.5rem !important;
 }
 
 body.large-mode h3 {
-    font-size: 1.75rem;
+    font-size: 2rem !important;
+}
+
+body.large-mode p,
+body.large-mode label,
+body.large-mode span,
+body.large-mode a,
+body.large-mode div {
+    font-size: 1.5rem !important;
 }
 
 body.large-mode .btn {
-    font-size: 1.25rem;
-    padding: 1rem 1.5rem;
-    min-height: 56px;
+    font-size: 1.5rem !important;
+    padding: 1.25rem 2rem !important;
+    min-height: 60px !important;
 }
 
 body.large-mode .set-input {
-    font-size: 1.5rem;
-    padding: 1rem;
-    min-height: 56px;
+    font-size: 2rem !important;
+    padding: 1.25rem !important;
+    min-height: 65px !important;
 }
 
 body.large-mode .timer-display {
-    font-size: 4rem;
+    font-size: 5rem !important;
 }
 
 body.large-mode .notes-textarea {
-    font-size: 1.25rem;
-    padding: 1rem;
+    font-size: 1.5rem !important;
+    padding: 1.25rem !important;
 }
 
 body.large-mode .workout-card h3 {
-    font-size: 1.75rem;
+    font-size: 2rem !important;
 }
 
 body.large-mode .stat-value {
-    font-size: 2.5rem;
+    font-size: 3rem !important;
 }
 
 body.large-mode .nav-link {
-    font-size: 1.25rem;
-    padding: 1rem 1.5rem;
+    font-size: 1.5rem !important;
+    padding: 1.25rem 2rem !important;
 }
 
 /* ===== TOUCH IMPROVEMENTS ===== */
